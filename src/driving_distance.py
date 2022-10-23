@@ -1,17 +1,14 @@
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 
-from src.traveling_salesman import GeneticAlgo
+from traveling_salesman import GeneticAlgo
 
 geolocator = Nominatim(user_agent="Pareto")
 
 cities = """
-Chennai
-Bangalore
-Hyderabad
-Telangana
-Jaipur
-Delhi
+India
+Pakistan
+
 """
 
 
@@ -37,7 +34,7 @@ for idx_1 in range(0, len(cities) - 1):
         dist_dict[city_a][city_b] = dist
         dist_dict[city_b][city_a] = dist
 
-g = GeneticAlgo(hash_map=dist_dict, start='Chennai', mutation_prob=0.25, crossover_prob=0.25,
+g = GeneticAlgo(hash_map=dist_dict, start='Delhi', mutation_prob=0.25, crossover_prob=0.25,
                 population_size=30, steps=45, iterations=2000)
 order = g.converge()
 print(order)

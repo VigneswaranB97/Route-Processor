@@ -214,7 +214,6 @@ def predict_hs():
         cos_sims = list(cosine_similarity([vector], np.array(dataSetII)))
         if len(cos_sims) > 0:
             all_results = []
-            print(len(cos_sims[0]))
             for idx, cs in enumerate(list(cos_sims[0])):
                 all_results.append([all_hs_sentences[idx], cs, hs_df[hs_df['description'] == str(all_hs_sentences[idx])]['hscode'].values[0]])
             cos_sims = sorted(all_results, key=lambda res: res[1], reverse=True)[:15]

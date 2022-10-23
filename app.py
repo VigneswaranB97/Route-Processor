@@ -118,31 +118,76 @@ class HarmonisedSystemSchema(ma.Schema):
 hs_schema = HarmonisedSystemSchema()
 hs_schemas = HarmonisedSystemSchema(many=True)
 
+def get_trade_details_helper(countries, year):
+    all_resps = []
+    total = {
+        "export_cost": 0,
+        "export_qty": 0,
+        "import_cost": 0,
+        "import_qty": 0
+    }
+    for country in countries:
+        details = {}
+        for code, data in imp_exp_dict[str(year)][str(country)].items():
+            details[str(code)] = {
+                "export_cost": 0,
+                "export_qty": 0,
+                "import_cost": 0,
+                "import_qty": 0
+            }
+
+            for tc, val in data.items():
+                details[code][tc] += val
+                total[tc] += val
+
+        all_resps.append({
+            'year': year,
+            'details': details,
+            'country': country,
+        })
+
+    return {
+        'total': total,
+        'resp': all_resps
+    }
+
+
 @app.route('/get-trade-details', methods=['POST'])
 def get_trade_details():
     try:
         year = request.json['year']
         countries = list(request.json['country'])
-        print(countries)
-        if 'all' in countries:
-            pass
+        if 'All' in countries:
+            total = {
+                "export_cost": 0,
+                "export_qty": 0,
+                "import_cost": 0,
+                "import_qty": 0
+            }
+            countries_list = []
+            for country in imp_exp_dict[str(year)].keys():
+                countries_list.append(country)
+            print(countries_list)
+            resp = get_trade_details_helper(countries_list, year)
+            return resp
         else:
             all_resps = []
             for country in countries:
                 details = {}
                 for code, data in imp_exp_dict[str(year)][str(country)].items():
-                    details[code] = {
+                    details[str(code)] = {
                         "export_cost": 0,
                         "export_qty": 0,
                         "import_cost": 0,
                         "import_qty": 0
                     }
-                    for tc, val in imp_exp_dict[str(year)][str(country)][str(code)]:
+
+                    for tc, val in data.items():
                         details[code][tc] += val
 
                 all_resps.append({
                     'year': year,
-                    'country': countries,
+                    'country': country,
                     'details': details
                 })
             return {
